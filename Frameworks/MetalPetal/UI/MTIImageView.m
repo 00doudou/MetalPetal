@@ -72,11 +72,15 @@
 
 - (void)didMoveToWindow {
     [super didMoveToWindow];
+#if TARGET_OS_VISION
+    _screenScale = 1.0;
+#else
     if (self.window.screen) {
         _screenScale = MIN(self.window.screen.nativeScale, self.window.screen.scale);
     } else {
         _screenScale = 1.0;
     }
+#endif
 }
 
 - (void)setContext:(MTIContext *)context {
@@ -163,7 +167,11 @@
 
 - (void)updateContentScaleFactor {
     MTKView *renderView = _renderView;
+    #if TARGET_OS_VISION
+    if (renderView.frame.size.width > 0 && renderView.frame.size.height > 0 && _image && _image.size.width > 0 && _image.size.height > 0) {
+    #else
     if (renderView.frame.size.width > 0 && renderView.frame.size.height > 0 && _image && _image.size.width > 0 && _image.size.height > 0 && self.window.screen != nil) {
+    #endif
         CGSize imageSize = _image.size;
         CGFloat widthScale = imageSize.width/renderView.bounds.size.width;
         CGFloat heightScale = imageSize.height/renderView.bounds.size.height;

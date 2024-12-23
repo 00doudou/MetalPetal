@@ -154,11 +154,15 @@ __attribute__((objc_subclassing_restricted))
 - (void)didMoveToWindow {
     [super didMoveToWindow];
     [_lock lock];
+    #if TARGET_OS_VISION
+    _screenScale = 1.0;
+    #else
     if (self.window.screen) {
         _screenScale = MIN(self.window.screen.nativeScale, self.window.screen.scale);
     } else {
         _screenScale = 1.0;
     }
+    #endif
     [_lock unlock];
 }
 
